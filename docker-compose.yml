@@ -35,6 +35,7 @@ services:
       - MESOS_HOSTNAME=3.0.176.188
       - MESOS_PORT=5151
       - MESOS_MASTER=zk://zookeeper:2181/mesos
+      - CUSTOM_EXECUTOR_HOME=/throttle
     links:
       - zookeeper
       - mesos-master
