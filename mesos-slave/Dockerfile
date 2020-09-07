@@ -1,11 +1,19 @@
 FROM newsupapat/mesos:1.9.0
 
 #Docker
-RUN apt-get update && apt-get install -y curl apt-transport-https ca-certificates lxc iptables apparmor && \
-  apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D && \
-  echo deb https://apt.dockerproject.org/repo ubuntu-xenial main > /etc/apt/sources.list.d/docker.list && \
-  apt-get update && \
-  apt-get -y install docker-engine
+RUN apt-get update
+RUN apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg |  apt-key add -
+RUN add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+RUN apt-get -y update && apt-get install -y docker-ce docker-ce-cli containerd.io
 
 ENV MESOS_CONTAINERIZERS docker,mesos
 ENV MESOS_EXECUTOR_REGISTRATION_TIMEOUT 5mins
