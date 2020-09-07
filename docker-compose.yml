@@ -27,7 +27,7 @@ services:
       - "5050:5050"
 
   mesos-slave:
-    image: newsupapat/mesos-salve:1.9.0
+    image: newsupapat/mesos-slave:1.9.0
     hostname: "mesos-slave"
     container_name: slave
     privileged: true
