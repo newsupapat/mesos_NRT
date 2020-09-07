@@ -43,7 +43,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup
-      - /var/run/docker.sock:/var/run/docker.sock
       - ./executor:/throttle
 
   marathon:
@@ -74,9 +73,9 @@ services:
       - mesos-master
     ports:
       - "4400:4400"
-  cassandra:
-    image: cassandra:3.3
-    hostname: "cassandra"
-    ports:
-      - "9160:9160"
-      - "9042:9042"
+  # cassandra:
+  #   image: cassandra:3.3
+  #   hostname: "cassandra"
+  #   ports:
+  #     - "9160:9160"
+  #     - "9042:9042"
