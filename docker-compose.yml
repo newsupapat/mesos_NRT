@@ -18,8 +18,8 @@ services:
     privileged: true
     restart: on-failure
     volumes:
-      - "$(pwd)/log/mesos:/var/log/mesos"
-      - "$(pwd)/tmp/mesos:/var/tmp/mesos"
+      - "/log/mesos:/var/log/mesos"
+      - "/tmp/mesos:/var/tmp/mesos"
     environment:
       - MESOS_HOSTNAME=3.0.176.188
       - MESOS_CLUSTER=SMACK
@@ -52,8 +52,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup
-      - "$(pwd)/log/mesos:/var/log/mesos"
-      - "$(pwd)/tmp/mesos:/var/tmp/mesos" 
+      - "/log/mesos-agent:/var/log/mesos"
+      - "/tmp/mesos-agent:/var/tmp/mesos" 
   marathon:
     image: datastrophic/marathon:1.3.6
     hostname: "marathon"
