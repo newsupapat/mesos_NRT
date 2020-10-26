@@ -39,9 +39,9 @@ services:
     restart: on-failure
     privileged: true
     environment:
-      - MESOS_HOSTNAME=3.0.176.188
+      - MESOS_HOSTNAME=54.255.190.18
       - MESOS_PORT=5151
-      - MESOS_MASTER=zk://zookeeper:2181/mesos
+      - MESOS_MASTER=175.41.153.202:5050
       - MESOS_LOG_DIR=/var/log/mesos
       - MESOS_WORK_DIR=/var/tmp/mesos
     links:
