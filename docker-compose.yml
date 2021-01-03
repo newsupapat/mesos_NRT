@@ -34,26 +34,21 @@ services:
 
   mesos-slave:
     image: newsupapat/mesos-slave:1.9.0
-    hostname: "mesos-slave"
+    hostname: "mesos-slave-2"
     container_name: slave
     restart: on-failure
     privileged: true
     environment:
-      - MESOS_HOSTNAME=54.255.190.18
+      - MESOS_HOSTNAME=macos
       - MESOS_PORT=5151
-      - MESOS_MASTER=175.41.153.202:5050
+      - MESOS_MASTER=54.169.226.121:5050
       - MESOS_LOG_DIR=/var/log/mesos
       - MESOS_WORK_DIR=/var/tmp/mesos
-    links:
-      - zookeeper
-      - mesos-master
     ports:
       - "5151:5151"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup
-      - "/log/mesos-agent:/var/log/mesos"
-      - "/tmp/mesos-agent:/var/tmp/mesos" 
   marathon:
     image: datastrophic/marathon:1.3.6
     hostname: "marathon"
