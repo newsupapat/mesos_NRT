@@ -1,4 +1,4 @@
-FROM datastrophic/mesos-spark
+FROM mesos:1.9
 
 #Docker
 RUN apt-get update

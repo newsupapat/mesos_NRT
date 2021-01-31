@@ -2,14 +2,13 @@ version: '3'
 services:
 
   zookeeper:
-    image: mesoscloud/zookeeper:3.4.6-ubuntu-14.04
-    hostname: "zookeeper"
-    restart: on-failure
     container_name: zookeeper
-    ports:
-      - "2181:2181"
-      - "2888:2888"
-      - "3888:3888"
+    hostname: zookeeper
+    image: mesoscloud/zookeeper:3.4.6-ubuntu-14.04
+    networks:
+      default:
+        aliases: [ "zk" ]
+    ports: [ "2181:2181" ]
 
   mesos-master:
     image: newsupapat/mesos-master:1.9.0
@@ -17,44 +16,58 @@ services:
     container_name: master
     privileged: true
     restart: on-failure
-    volumes:
-      - "/log/mesos:/var/log/mesos"
-      - "/tmp/mesos:/var/tmp/mesos"
+    # volumes:
+    #   - "/log/mesos:/var/log/mesos"
+    #   - "/tmp/mesos:/var/tmp/mesos"
     environment:
-      - MESOS_HOSTNAME=18.141.180.225
+      - MESOS_HOSTNAME=localhost
       - MESOS_CLUSTER=SMACK
       - MESOS_QUORUM=1
       - MESOS_ZK=zk://zookeeper:2181/mesos
       - MESOS_LOG_DIR=/tmp/mesos/logs
       - MESOS_WORK_DIR=/var/tmp/mesos
-      - MESOS_ADVERTISE_IP=18.141.180.225
+      # - MESOS_ADVERTISE_IP=18.141.180.225
     links:
       - zookeeper
     ports:
       - "5050:5050"
 
-  mesos-slave:
+  spark-mesos:
+    image: tutorial
+    container_name: spark-mesos
+    hostname: spark-mesos
+    environment:
+      SPARK_MESOS_DISPATCHER_HOST: spark-mesos
+    depends_on:
+      - zookeeper
+    entrypoint: /usr/local/spark/bin/spark-class org.apache.spark.deploy.mesos.MesosClusterDispatcher --master mesos://zk://zookeeper:2181/mesos --zk zk:2181 --name spark --port 7077 --host spark-mesos --webui-port 8084
+    ports:
+      - "8084:8084"
+      - "7077:7077"
+  mesos-slave2:
     image: newsupapat/mesos-slave:1.9.0
-    hostname: "mesos-slave-2"
-    container_name: slave
-    restart: on-failure
+    hostname: "mesos-slave"
     privileged: true
     environment:
-      - MESOS_HOSTNAME=18.141.180.225
+      - MESOS_HOSTNAME=localhost
       - MESOS_PORT=5051
-      - MESOS_MASTER=18.141.180.225:5050
+      - MESOS_MASTER=zk://zk:2181/mesos
+      - MESOS_CONTAINERIZERS=docker,mesos
+    working_dir: /usr/local/
     ports:
       - "5051:5051"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/bin/docker
+      - ./python/:/python/
   marathon:
     image: datastrophic/marathon:1.3.6
     hostname: "marathon"
     container_name: marathon
     restart: on-failure
     environment:
-      - MARATHON_HOSTNAME=18.141.180.225
+      - MARATHON_HOSTNAME=localhost
       - MARATHON_MASTER=zk://zookeeper:2181/mesos
       - MARATHON_ZK=zk://zookeeper:2181/marathon
     links:
@@ -69,7 +82,7 @@ services:
     container_name: chronos
     restart: on-failure
     environment:
-      - CHRONOS_HOSTNAME=18.141.180.225
+      - CHRONOS_HOSTNAME=localhost
       - CHRONOS_HTTP_PORT=4400
       - CHRONOS_MASTER=zk://zookeeper:2181/mesos
       - CHRONOS_ZK_HOSTS=zookeeper:2181
